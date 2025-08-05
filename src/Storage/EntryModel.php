@@ -15,7 +15,7 @@ class EntryModel extends Model
      *
      * @var string
      */
-    protected $table = 'telescope_entries';
+    protected $table = 'telescope_plus_entries';
 
     /**
      * The name of the "updated at" column.
