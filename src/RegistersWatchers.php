@@ -35,17 +35,26 @@ trait RegistersWatchers
                 continue;
             }
 
-            if (is_array($watcher) && ! ($watcher['enabled'] ?? true)) {
+            $settings = is_array($watcher) ? $watcher : ['enabled' => true];
+
+            if (! ($settings['enabled'] ?? true)) {
                 continue;
             }
 
-            $watcher = $app->make(is_string($key) ? $key : $watcher, [
-                'options' => is_array($watcher) ? $watcher : [],
+            $enabledOnProd = $settings['enabled_on_production'] ?? false;
+            $isProd = app()->environment('production');
+
+            if ($isProd && ! $enabledOnProd) {
+                continue;
+            }
+
+            $watcherInstance = $app->make(is_string($key) ? $key : $settings, [
+                'options' => $settings,
             ]);
 
-            static::$watchers[] = get_class($watcher);
+            static::$watchers[] = get_class($watcherInstance);
 
-            $watcher->register($app);
+            $watcherInstance->register($app);
         }
     }
 }
